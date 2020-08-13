@@ -23,14 +23,15 @@ from qgis.core import QgsApplication
 def qgis_init():
 # Initialize QGIS Application
     qgs = QgsApplication([], False)
-    QgsApplication.setPrefixPath("/home/gnodj/anaconda3/envs/38/bin/qgis", True)
+    QgsApplication.setPrefixPath("INSERT PATH TO QGIS EXECUTABLE", True)
     QgsApplication.initQgis()
     for alg in QgsApplication.processingRegistry().algorithms():
             print(alg.id(), "->", alg.displayName())
     return(qgs)
 
 
-PATH = '/media/gnodj/W-DATS/DeepLearning/Tensorflow/workspace/HiRiSE_Dataset/sub'
+PATH = #INSERT PATH TO JP2 DIRECTORY
+
 def get_paths(PATH):
     # from pathlib import Path
 
@@ -44,11 +45,7 @@ def get_paths(PATH):
 
 def pngs(file):
     image_name= pathlib.Path(file).name.split('.')[0]
-		#add vectorlayers
-    
-        
     rlayer = QgsRasterLayer(file, image_name)
-    # QgsProject.instance().addMapLayer(rlayer, False)
     project.addMapLayer(rlayer, False)
     project.write(project_name)
     layer = project.mapLayersByName(image_name)[0]
@@ -66,7 +63,6 @@ def pngs(file):
 
     def finished():
         img = render.renderedImage()
-        # save the image; e.g. img.save("/Users/myuser/render.png","png")
         name = PATH+'/'+image_name+'_print.png'
         img.save(name, "png")
 
@@ -83,18 +79,8 @@ project_name = PATH+'/Skylight_JP2.qgz'
 project.write(project_name)
 
 for file in rasters:
-# for i in range(4):
-    # file = rasters[i]
     if file.endswith(".JP2"):
         print(QgsProject.instance().mapLayers())
-        # time.sleep(100)
-        # QTimer.singleShot(1000, pngs()
-        
-        # pngs(file)
-        # time.sleep(5)
-        
-        # time.sleep(5)
         pngs(file)
-        # project.write(project_name)
         print(QgsProject.instance().mapLayers())
         project.clear()

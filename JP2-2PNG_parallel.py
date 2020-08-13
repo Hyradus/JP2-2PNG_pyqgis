@@ -24,14 +24,14 @@ from qgis.core import QgsApplication
 
 
 
-PATH = '/media/gnodj/W-DATS/HiRiSE_Data/Skylight'
+PATH = #INSERT PATH TO JP2 DIRECTORY
 
 global res
 res = 14
 def qgis_init():
 # Initialize QGIS Application
     qgs = QgsApplication([], False)
-    QgsApplication.setPrefixPath("/home/gnodj/anaconda3/envs/38/bin/qgis", True)
+    QgsApplication.setPrefixPath("INSERT PATH TO QGIS EXECUTABLE", True)
     QgsApplication.initQgis()
     for alg in QgsApplication.processingRegistry().algorithms():
             print(alg.id(), "->", alg.displayName())
@@ -67,10 +67,6 @@ def make_folder(name):
     return(folder)
 
 def get_paths(PATH):
-    # from pathlib import Path
-
-    # for path in Path(PATH).rglob('*.JP2'):
-    #     print(path.name)
     import glob
     os.chdir(PATH)
     filename = [i for i in glob.glob('**/*.JP2',recursive=True)]
@@ -80,16 +76,10 @@ def get_paths(PATH):
 
 def pngs(file, res):
     image_name= pathlib.Path(file).name.split('.')[0]
-		#add vectorlayers
     qgs = qgis_init()
     project= QgsProject.instance() 
-    # project_name = PATH+'/'+image_name+'.qgz'
-    # project.write(project_name)
-        
     rlayer = QgsRasterLayer(file, image_name)
-    # QgsProject.instance().addMapLayer(rlayer, False)
     project.addMapLayer(rlayer, False)
-    # project.write(project_name)
     layer = project.mapLayersByName(image_name)[0]
     
     settings = QgsMapSettings()
@@ -105,19 +95,13 @@ def pngs(file, res):
 
     def finished():
         img = render.renderedImage()
-        # save the image; e.g. img.save("/Users/myuser/render.png","png")
         name = PATH+'/PNGs/'+image_name+'_print.png'
         img.save(name, "png")
 
     render.finished.connect(finished)  
     render.start()
     render.waitForFinished()
-    # print('rendering: ', image_name)
-    # print(QgsProject.instance().mapLayers())
     project.clear()
-
-
-
 
 def parallel_JP2PNG(files, JOBS):
     from joblib import Parallel, delayed
@@ -135,30 +119,8 @@ def chunk_creator(item_list, chunksize):
             break
         yield chunk
 
-
-
-# for file in rasters:
-# # for i in range(4):
-#     # file = rasters[i]
-#     if file.endswith(".JP2"):
-#         print(QgsProject.instance().mapLayers())
-#         # time.sleep(100)
-#         # QTimer.singleShot(1000, pngs()
-        
-#         # pngs(file)
-#         # time.sleep(5)
-        
-#         # time.sleep(5)
-#         pngs(file)
-#         # project.write(project_name)
-#         print(QgsProject.instance().mapLayers())
-#         project.clear()
-
 rasters = get_paths(PATH)
 
-# project= QgsProject.instance() 
-# project_name = PATH+'/Skylight_JP2.qgz'
-# project.write(project_name)
 os.chdir(PATH)
 make_folder('PNGs')
 
@@ -183,7 +145,6 @@ with tqdm(total=len(rasters),
 
     for i in range(len(chunks)):
         files = chunks[i]    
-        # print(files)
         print('\nRendering: ', files)
         parallel_JP2PNG(files, JOBS)
         pbar.update(JOBS)
